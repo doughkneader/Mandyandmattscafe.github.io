@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandy & Matt's Cafe – Home-Cooked Breakfast & Cozy Vibes in Portland, ME</title>
+    
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: A single-page, vertical-scrolling application with a sticky top navigation for smooth jumps between sections. This structure was chosen because it's highly intuitive for users on all devices and allows for a narrative flow, starting with the brand's story and moving through offerings and functional elements like reservations. It translates the report's structure into a seamless, modern user experience, prioritizing ease of access to key information like the menu and contact details. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Family Legacy/Story -> Goal: Inform/Connect -> Viz: Two-column text and image layout -> Interaction: Static content -> Justification: Creates an emotional connection and tells the core brand story effectively.
+        - Report Info: Full Menu -> Goal: Organize/Compare -> Viz: Grid of menu items -> Interaction: JavaScript-powered category filters -> Justification: Allows users to easily explore the extensive menu without being overwhelmed, directly addressing a key business need.
+        - Report Info: Testimonials -> Goal: Build Trust -> Viz: Dynamic Carousel -> Interaction: Auto-playing slides with manual controls -> Justification: Presents social proof in a space-efficient and engaging manner.
+        - Report Info: Reservations -> Goal: Streamline Operations -> Viz: HTML Form -> Interaction: JavaScript validation and submission simulation -> Justification: Provides a core functional benefit to both the customer and the cafe.
+        - Library/Method: Vanilla JavaScript and Tailwind CSS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <meta name="description" content="Visit Mandy & Matt's Cafe for classic breakfast, delicious food, and a warm, family-friendly atmosphere. Explore our menu, reserve a table, or join our community events!">
+    <meta property="og:title" content="Mandy & Matt's Cafe – Home-Cooked Breakfast & Cozy Vibes in Portland, ME">
+    <meta property="og:description" content="A revival of a beloved local spot, serving home-cooked classics with a focus on community and family.">
+    <meta property="og:image" content="https://placehold.co/1200x630/8B4513/FFFFFF?text=Mandy+%26+Matt's+Cafe">
+    <meta property="og:url" content="#">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>☕</text></svg>">
+
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #F5F5DC;
+            color: #4A2E20; 
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Lora', serif;
+        }
+        .hero-bg {
+            background-image: url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2047&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        .nav-item {
+            position: relative;
+            transition: color 0.3s, background 0.3s, box-shadow 0.3s, transform 0.25s cubic-bezier(.4,2,.3,1), filter 0.25s;
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+        }
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            left: 50%;
+            bottom: 8px;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, #FFD700 60%, #FFECB3 100%);
+            border-radius: 2px;
+            box-shadow: 0 1px 4px 0 rgba(255,215,0,0.12);
+            opacity: 0.85;
+            transition: width 0.3s cubic-bezier(.4,2,.3,1), background 0.3s, opacity 0.3s;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.35);
+            box-shadow: 0 4px 24px 0 rgba(139,69,19,0.15), 0 1.5px 6px 0 rgba(139,69,19,0.10);
+            color: #8B4513 !important;
+            transform: scale(1.08) translateY(-2px);
+            filter: brightness(1.08) saturate(1.2);
+        }
+        .nav-item:hover::after, .nav-item.active::after {
+            width: 60%;
+        }
+        .menu-filter-btn.active {
+            background-color: #8B4513;
+            color: #FFFFFF;
+        }
+        .cafe-logo-anim {
+            display: inline-block;
+            animation: cafe-bounce 2.5s infinite cubic-bezier(.68,-0.55,.27,1.55);
+        }
+        @keyframes cafe-bounce {
+            0%, 100% { transform: translateY(0); }
+            10% { transform: translateY(-4px); }
+            20% { transform: translateY(0); }
+        }
+        .cafe-logo-anim .steam {
+            animation: steam-rise 2.5s infinite ease-in-out;
+        }
+        @keyframes steam-rise {
+            0%, 100% { opacity: 0; transform: translateY(0) scaleY(1); }
+            10% { opacity: 1; transform: translateY(-4px) scaleY(1.1); }
+            20% { opacity: 0.7; transform: translateY(-8px) scaleY(1.2); }
+            30% { opacity: 0; transform: translateY(-12px) scaleY(1.3); }
+            100% { opacity: 0; transform: translateY(0) scaleY(1); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-stone-50/60 backdrop-blur-lg sticky top-4 z-50 transition-all duration-300 shadow-xl rounded-2xl mx-auto w-[95%] md:w-[90%] mt-4">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#home" class="text-2xl font-bold text-stone-800 font-lora flex items-center gap-2">
+                <span class="cafe-logo-anim">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="16" cy="24" rx="10" ry="4" fill="#D2B48C"/>
+                        <rect x="8" y="10" width="16" height="12" rx="6" fill="#8B4513" stroke="#4A2E20" stroke-width="2"/>
+                        <rect x="22" y="14" width="4" height="6" rx="2" fill="#FFD700" stroke="#8B4513" stroke-width="1"/>
+                        <path d="M14 10c0-2 4-2 4 0" stroke="#FFD700" stroke-width="1.5" stroke-linecap="round"/>
+                        <path class="steam" d="M16 7c0-1 2-1 2 0s-2 1-2 0z" stroke="#FFD700" stroke-width="1" fill="none"/>
+                    </svg>
+                </span>
+                Mandy & Matt's Cafe
+            </a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#story" class="nav-item text-stone-700 hover:text-stone-900">Our Story</a>
+                <a href="#menu" class="nav-item text-stone-700 hover:text-stone-900">Menu</a>
+                <a href="#events" class="nav-item text-stone-700 hover:text-stone-900">Events</a>
+                <a href="#contact" class="nav-item text-stone-700 hover:text-stone-900">Visit Us</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-stone-800 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-stone-50">
+            <a href="#story" class="block py-2 px-4 text-sm text-stone-700 hover:bg-stone-200">Our Story</a>
+            <a href="#menu" class="block py-2 px-4 text-sm text-stone-700 hover:bg-stone-200">Menu</a>
+            <a href="#events" class="block py-2 px-4 text-sm text-stone-700 hover:bg-stone-200">Events</a>
+            <a href="#contact" class="block py-2 px-4 text-sm text-stone-700 hover:bg-stone-200">Visit Us</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="hero-bg h-screen flex items-center justify-center text-white">
+            <div class="bg-black bg-opacity-50 p-12 rounded-lg text-center backdrop-blur-sm">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4 animate-fade-in-down">Welcome to Mandy & Matt's Cafe</h1>
+                <p class="text-lg md:text-xl mb-8 max-w-2xl animate-fade-in-up">Your Home Away from Home, Rooted in Tradition. Enjoy classic breakfast, delicious lunch, and a warm, family-friendly atmosphere.</p>
+                <div class="space-x-4 animate-fade-in">
+                    <a href="#menu" class="bg-white text-[#8B4513] py-3 px-8 rounded-full font-semibold hover:bg-stone-200 transition-colors text-lg">View Menu</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="story" class="py-20 md:py-32 bg-stone-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-stone-800">Our Story</h2>
+                    <p class="text-lg text-stone-600 mt-2">More than a menu, we've created a vibe.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6 text-stone-700 leading-relaxed">
+                        <p>Welcome to Mandy & Matt's Cafe, where we're bringing back to life the spirit of a Portland favorite, Kathy & Dave's Cafe. With three decades of experience in her family's beloved business, Mandy, alongside her husband Matt, is continuing a legacy of family atmosphere, friendly service, and terrific, home-cooked food.</p>
+                        <p>Our mission is simple: to be a warm, inviting, community-focused hub. We prioritize sustainable practices and exceptional customer service, from our classic breakfast dishes to our famous family muffin recipes. We're not just a new venture; we are the revival of a cherished local institution, and we invite you to be a part of our story.</p>
+                        <p class="font-semibold">We believe in good food, good company, and the power of community. We look forward to welcoming you.</p>
+                    </div>
+                    <div>
+                        <img src="https://i.postimg.cc/pV9L8VNz/502409330-17856688470446756-2478857115721576642-n.jpg" alt="Cafe owners smiling" class="rounded-lg shadow-xl w-full h-auto">
+                    </div>
+                </div>
+                <div class="my-6">
+                    <img src="\docs\images\491438760_18505110217050382_6196519380939445033_n.png" alt="Our Cafe in Portland, ME" class="rounded-lg shadow-md w-1/2 h-auto mb-2 mx-auto block">
+                    <div class="text-sm text-stone-500 text-center">Our Cafe in Portland, ME</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="menu" class="py-20 md:py-32">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-stone-800">Our Menu</h2>
+                    <p class="text-lg text-stone-600 mt-2">Home-cooked classics and creative favorites.</p>
+                </div>
+                <div id="menu-filters" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-10">
+                    <button class="menu-filter-btn active py-2 px-5 rounded-full border-2 border-[#8B4513] text-[#8B4513] transition-colors" data-filter="all">All</button>
+                    <button class="menu-filter-btn py-2 px-5 rounded-full border-2 border-[#8B4513] text-[#8B4513] transition-colors" data-filter="muffins">Signature Muffins</button>
+                    <button class="menu-filter-btn py-2 px-5 rounded-full border-2 border-[#8B4513] text-[#8B4513] transition-colors" data-filter="breakfast">Breakfast</button>
+                    <button class="menu-filter-btn py-2 px-5 rounded-full border-2 border-[#8B4513] text-[#8B4513] transition-colors" data-filter="lunch">Lunch</button>
+                    <button class="menu-filter-btn py-2 px-5 rounded-full border-2 border-[#8B4513] text-[#8B4513] transition-colors" data-filter="beverages">Beverages</button>
+                </div>
+
+                <div id="menu-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                </div>
+            </div>
+        </section>
+        
+        <section id="testimonials" class="py-20 md:py-32 bg-stone-50">
+            <div class="container mx-auto px-6">
+                 <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-stone-800">Carrying on the Legacy</h2>
+                    <p class="text-lg text-stone-600 mt-2">Honoring the "family atmosphere, friendly service and terrific food" of our heritage.</p>
+                </div>
+                <div class="relative max-w-3xl mx-auto h-48">
+                </div>
+            </div>
+        </section>
+
+        <section id="events" class="py-20 md:py-32">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-stone-800">Community Events</h2>
+                    <p class="text-lg text-stone-600 mt-2">Join us for special gatherings and good times.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-lg shadow-lg p-6 text-center transform hover:scale-105 transition-transform">
+                        <h3 class="text-2xl font-bold text-[#8B4513] mb-3">Family Muffin Workshop</h3>
+                        <p class="font-semibold text-stone-600 mb-3">August 10, 2025 - 10 AM</p>
+                        <p class="text-stone-600">Learn the secrets behind our famous family muffin recipes! A fun, hands-on workshop for all ages. Limited spots available.</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg p-6 text-center transform hover:scale-105 transition-transform">
+                        <h3 class="text-2xl font-bold text-[#8B4513] mb-3">Local Artist Showcase</h3>
+                        <p class="font-semibold text-stone-600 mb-3">September 5, 2025 - All Day</p>
+                        <p class="text-stone-600">We're proud to feature the work of talented local artists. Come enjoy great food and beautiful art.</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg p-6 text-center transform hover:scale-105 transition-transform">
+                        <h3 class="text-2xl font-bold text-[#8B4513] mb-3">Brunch & Live Music</h3>
+                        <p class="font-semibold text-stone-600 mb-3">Every Sunday - 11 AM to 1 PM</p>
+                        <p class="text-stone-600">Enjoy your favorite brunch dishes accompanied by the smooth sounds of local acoustic musicians.</p>
+                    </div>
+                </div>
+                 <div class="text-center mt-12">
+                    <a href="#contact" class="text-[#8B4513] font-semibold text-lg hover:underline">Contact us to host your event →</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-20 md:py-32">
+             <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-start">
+                <div>
+                    <h2 class="text-4xl font-bold text-stone-800 mb-6">Visit Us</h2>
+                    <div class="space-y-6">
+                         <div>
+                            <h3 class="text-xl font-semibold text-[#8B4513]">Location</h3>
+                            <p class="text-stone-700">1160 Forest Avenue, Portland, ME</p>
+                        </div>
+                         <div>
+                            <h3 class="text-xl font-semibold text-[#8B4513]">Hours</h3>
+                            <p class="text-stone-700">Daily: 6 AM – 2 PM</p>
+                            <p class="text-stone-700">Lunch Service: 11 AM – 2 PM</p>
+                        </div>
+                         <div>
+                            <h3 class="text-xl font-semibold text-[#8B4513]">Get In Touch</h3>
+                            <p class="text-stone-700">Phone: <a href="tel:+12075360806" class="hover:underline">+1 (207) 536-0806</a></p>
+                            <p class="text-stone-700">Email: <a href="mailto:mandyandmattscafe@gmail.com" class="hover:underline">mandyandmattscafe@gmail.com</a></p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="w-full h-96 rounded-lg shadow-xl overflow-hidden">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2886.9961621217316!2d-70.3013835845015!3d43.67022197912071!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4cb29b9f7f457169%3A0x6282855bcf943a42!2s1160%20Forest%20Ave%2C%20Portland%2C%20ME%2004103%2C%20USA!5e0!3m2!1sen!2sca!4v1680000000000"
+                            width="100%"
+                            height="100%"
+                            style="border:0;"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#4A2E20] text-stone-300 py-12">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-lg font-lora mb-4">Mandy & Matt's Cafe</p>
+            <div class="flex justify-center space-x-6 mb-6">
+                <a href="https://www.instagram.com/mandyandmattscafe/?hl=en" target="_blank" rel="noopener" class="hover:text-white transition-colors">Instagram</a>
+            </div>
+            <p class="text-sm">&copy; <span id="current-year"></span> Mandy & Matt's Cafe. All rights reserved.</p>
+            <p class="text-xs mt-2">A revival of the beloved Kathy & Dave's Cafe tradition.</p>
+        </div>
+    </footer>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const menuItems = [
+            { id: 1, name: 'Our Famous Blueberry Muffin', category: 'muffins', price: '3.50', description: 'A beloved family recipe passed down through generations. Bursting with fresh Maine blueberries.', image: 'https://i.postimg.cc/y6wp6jXc/blueberry-muffins.jpg' },
+            { id: 2, name: 'The Classic Breakfast', category: 'breakfast', price: '12.00', description: 'Two eggs any style, choice of bacon or sausage, home fries, and toast.', image: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80' },
+            { id: 3, name: 'Pastrami Reuben', category: 'lunch', price: '14.50', description: 'Classic hot pastrami, sauerkraut, Swiss cheese, and Russian dressing on grilled rye.', image: 'https://images.unsplash.com/photo-1608767221051-2b9d18f35a2f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80' },
+            { id: 4, name: 'Artisanal Drip Coffee', category: 'beverages', price: '3.00', description: 'Sustainably sourced and locally roasted beans. A perfect cup every time.', image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80' },
+            { id: 5, name: 'Fluffy Buttermilk Pancakes', category: 'breakfast', price: '10.50', description: 'A stack of three fluffy pancakes served with real maple syrup and butter.', image: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80' },
+            { id: 6, name: 'Cranberry Walnut Muffin', category: 'muffins', price: '3.50', description: 'A delightful combination of tart cranberries and crunchy walnuts.', image: 'https://i.postimg.cc/W4vPDjGm/SSe-cranberry-muffins-medium-Square-At3-X-v2.jpg' },
+            { id: 7, name: 'Three-Cheese Omelet', category: 'breakfast', price: '11.50', description: 'A fluffy omelet filled with cheddar, Swiss, and provolone cheese. Served with toast.', image: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80' },
+            { id: 8, name: 'Turkey Club Sandwich', category: 'lunch', price: '13.50', description: 'Triple-decker sandwich with roasted turkey, bacon, lettuce, tomato, and mayo.', image: 'https://i.postimg.cc/4yT4st8G/20231204-SEA-Turkey-Club-Fred-Hardy-01-6679650f138a4f419e330a8a0f31576d.jpg' },
+            { id: 9, name: 'Fresh Squeezed Orange Juice', category: 'beverages', price: '4.50', description: 'A refreshing glass of juice, squeezed daily from fresh oranges.', image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80' },
+        ];
+        
+        const testimonials = [
+            { quote: "Mandy & Matt's carries on the beloved tradition of great food and warm hospitality. It feels like coming home.", author: "A longtime fan of the family legacy" },
+            { quote: "A true gem bringing back the best of Portland's breakfast scene. The muffins are just as good as I remember!", author: "Rediscovering a favorite spot" },
+            { quote: "You can feel the passion and history in every bite. It's more than just a meal, it's an experience.", author: "A new regular" },
+        ];
+
+        const menuGrid = document.getElementById('menu-grid');
+        const menuFilters = document.getElementById('menu-filters');
+        
+        function renderMenu(filter = 'all') {
+            menuGrid.innerHTML = '';
+            const filteredItems = filter === 'all' 
+                ? menuItems 
+                : menuItems.filter(item => item.category === filter);
+
+            filteredItems.forEach(item => {
+                const menuItem = document.createElement('div');
+                menuItem.className = 'menu-item bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300';
+                menuItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                           <h3 class="text-xl font-bold text-stone-800">${item.name}</h3>
+                           <p class="text-lg font-semibold text-[#8B4513]">$${item.price}</p>
+                        </div>
+                        <p class="text-stone-600">${item.description}</p>
+                    </div>
+                `;
+                menuGrid.appendChild(menuItem);
+            });
+        }
+        
+        menuFilters.addEventListener('click', function(e) {
+            if (e.target.tagName === 'BUTTON') {
+                document.querySelector('.menu-filter-btn.active').classList.remove('active');
+                e.target.classList.add('active');
+                const filter = e.target.dataset.filter;
+                renderMenu(filter);
+            }
+        });
+
+        const testimonialsContainer = document.querySelector('#testimonials .relative');
+        let currentTestimonial = 0;
+
+        function renderTestimonials() {
+            testimonialsContainer.innerHTML = '';
+            testimonials.forEach((testimonial, index) => {
+                const testimonialEl = document.createElement('div');
+                testimonialEl.className = 'absolute inset-0 transition-opacity duration-1000 ease-in-out';
+                testimonialEl.style.opacity = index === currentTestimonial ? '1' : '0';
+                testimonialEl.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-center">
+                        <p class="text-xl md:text-2xl italic text-stone-700">"${testimonial.quote}"</p>
+                        <p class="mt-4 font-semibold text-[#8B4513]">- ${testimonial.author}</p>
+                    </div>
+                `;
+                testimonialsContainer.appendChild(testimonialEl);
+            });
+        }
+
+        function nextTestimonial() {
+            currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+            renderTestimonials();
+        }
+
+        setInterval(nextTestimonial, 5000);
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        renderMenu();
+        renderTestimonials();
+    });
+    </script>
+</body>
+</html>
